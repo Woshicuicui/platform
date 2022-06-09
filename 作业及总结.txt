@@ -1,0 +1,68 @@
+
+day2
+作业：
+    1、用户增删改查能力，代码自行重写，自己写一个xmind，把模块和能力列举出以后自行实现。
+        web层的接口
+        entity层的实体
+        service层的方法
+
+
+2、权限控制
+    (1) token生成
+        course-entity/security/utils/JWTUtils
+            登录(生成token)
+            通过token取用户名、userId
+            验证token是否为指定用户的token(鉴权验证)
+
+        绑定到登录接口
+        course-web/rest/security/AuthController
+            login方法中，对比完用户的密码以后，生成一个token返回给用户
+
+    (2) 权限过滤
+        自定义了一个JWTFilter(JWT的过滤器) spring的运行组件
+            course-web/config/JWTFilter.java
+
+        通过定义一个spring的配置类ShiroConfig，加载JWTFilter 并且命名为jwt 规则
+            com/bt/course/config/ShiroConfig.java
+            定义了一个过滤规则： filterRules  (开发者根据实际要求来控制不需要检查auth的接口)
+                所有标记为 anon的为过滤，不会被shiro拦截
+                标记为 jwt的为所有需要拦截的地址，通常用 /** 来表示所有接口都需要拦截
+
+            定义了一个JWTRealm，判断用户是否存在后做以下两个操作(这两个操作都是开发者自定义的操作)
+                doGetAuthorizationInfo
+                来给用户添加权限
+                doGetAuthenticationInfo
+                判断token是否有效
+
+
+    (3) 底座平台基础组件
+        通用 ServiceException异常
+        统一异常码 ExceptionCodeEnum
+
+        统一标准化返回  Response
+        标准返回构造工厂 ResponseFactory
+           构造标准化返回结果
+        全局ServiceExcption返回拦截器 handleServiceException
+           用来捕捉声明的ServiceExcption异常，转化为标准化异常返回
+
+
+
+day3
+    开发的方式
+        1、先定义实体类、定义数据库表结构
+        2、完成mapper、service的类创建，并各自继承BaseMapper或ServiceImpl
+        3、定义接口
+            把功能列举： 增删改查
+            写接口，先设定接口路径、接口入参、接口返回值
+        4、实现接口
+            把接口接收到的参数交给service类去完成业务逻辑（根据接口所需功能开发对应的方法）
+    编码习惯
+        1、多去考虑非空校验
+            尤其作为一个串联逻辑的bean或bean的属性
+
+    作业：
+        自己实现代码中遗留的todo
+        至少自己独立完成一个模块的增删改查接口（controller和service层）
+        标记一下哪部分是自己完成的，以及遇到的问题
+        打包前先执行mvn clean操作然后再打包
+        周三晚上之前交，发445723280@qq.com
